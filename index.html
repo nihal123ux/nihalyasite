@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Nihal's Interactive Website</title>
+
+  <style>
+    /* MAIN COMFY BACKGROUND */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      text-align: center;
+      background-color: #f7f4ef; /* comfy cream */
+    }
+
+    /* NAVBAR */
+    .navbar {
+      background-color: #2c3e50;
+      padding: 10px;
+    }
+    .navbar button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 16px;
+      margin: 0 15px;
+      cursor: pointer;
+    }
+    .navbar button:hover {
+      text-decoration: underline;
+    }
+
+    /* TABS */
+    .tab {
+      display: none;
+      padding: 25px;
+      min-height: 100vh;
+    }
+
+    /* ABOUT ME TAB – SKY + WARM BLUE */
+    #about {
+      background: linear-gradient(135deg, #87ceeb, #6fa8dc);
+      color: #102a43;
+    }
+
+    /* GAMES TAB – COOL GAMER BLUE */
+    #games {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: white;
+    }
+
+    #games canvas {
+      background-color: white;
+      border-radius: 10px;
+    }
+
+    /* ROBOT */
+    .robot {
+      width: 160px;
+      margin: 20px auto;
+      cursor: pointer;
+    }
+    .head {
+      background: #d9d9d9;
+      width: 160px;
+      height: 120px;
+      border-radius: 20px;
+      position: relative;
+    }
+    .eye {
+      width: 20px;
+      height: 20px;
+      background: black;
+      border-radius: 50%;
+      position: absolute;
+      top: 40px;
+    }
+    .eye.left { left: 40px; }
+    .eye.right { right: 40px; }
+    .body {
+      width: 120px;
+      height: 100px;
+      background: #b0b0b0;
+      margin: 0 auto;
+      border-radius: 10px;
+    }
+
+    canvas {
+      border: 2px solid black;
+      margin: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- NAVIGATION -->
+<div class="navbar">
+  <button onclick="openTab('about')">About Me</button>
+  <button onclick="openTab('games')">Games</button>
+</div>
+
+<!-- ABOUT ME TAB -->
+<div id="about" class="tab">
+  <h1>About Me</h1>
+
+  <div class="robot" onclick="robotTalk()">
+    <div class="head">
+      <div class="eye left"></div>
+      <div class="eye right"></div>
+    </div>
+    <div class="body"></div>
+  </div>
+
+  <p id="robotText"><b>Click the robot to interact!</b></p>
+
+  <p>
+    Hello, my name is Nihal. I am a student of JSSPS, Al Safa, Dubai.
+    I am 10 years old and I enjoy learning technology and creating websites.
+  </p>
+
+  <p>
+    My five favourite foods are burgers, dhal, fish fry, chicken,
+    and pepperoni pizza. I live in The Gardens, Dubai.
+  </p>
+
+  <p>
+    📞 <b>Call for more info:</b> 0555578560
+  </p>
+</div>
+
+<!-- GAMES TAB -->
+<div id="games" class="tab">
+  <h1>Games</h1>
+
+  <h2>🐍 Snake Game</h2>
+  <canvas id="snake" width="300" height="300"></canvas>
+  <p>Use arrow keys to move</p>
+
+  <h2>🍎 Falling Apple Catch Game</h2>
+  <canvas id="apple" width="300" height="300"></canvas>
+  <p>Move basket with arrow keys</p>
+</div>
+
+<script>
+/* TAB SWITCHING */
+function openTab(tabName) {
+  document.querySelectorAll(".tab").forEach(tab => tab.style.display = "none");
+  document.getElementById(tabName).style.display = "block";
+}
+openTab("about");
+
+/* ROBOT INTERACTION */
+const robotMessages = [
+  "Hello! I am Nihal's robot 🤖",
+  "I like coding and games!",
+  "Click the Games tab to play 🎮",
+  "HTML and JavaScript are awesome!"
+];
+let robotIndex = 0;
+
+function robotTalk() {
+  document.getElementById("robotText").innerText =
+    robotMessages[robotIndex];
+  robotIndex = (robotIndex + 1) % robotMessages.length;
+}
+
+/* SNAKE GAME */
+const sctx = document.getElementById("snake").getContext("2d");
+let snake = [{x:150,y:150}];
+let direction = "RIGHT";
+let food = {x:100,y:100};
+
+document.addEventListener("keydown", e => {
+  if (e.key.includes("Arrow")) {
+    direction = e.key.replace("Arrow","").toUpperCase();
+  }
+});
+
+setInterval(() => {
+  sctx.clearRect(0,0,300,300);
+  sctx.fillStyle = "green";
+  snake.forEach(p => sctx.fillRect(p.x,p.y,10,10));
+  sctx.fillStyle = "red";
+  sctx.fillRect(food.x,food.y,10,10);
+
+  let head = {...snake[0]};
+  if(direction==="UP") head.y-=10;
+  if(direction==="DOWN") head.y+=10;
+  if(direction==="LEFT") head.x-=10;
+  if(direction==="RIGHT") head.x+=10;
+  snake.unshift(head);
+
+  if(head.x===food.x && head.y===food.y){
+    food = {
+      x: Math.floor(Math.random()*30)*10,
+      y: Math.floor(Math.random()*30)*10
+    };
+  } else {
+    snake.pop();
+  }
+},150);
+
+/* APPLE CATCH GAME */
+const actx = document.getElementById("apple").getContext("2d");
+let basketX = 120;
+let appleY = 0;
+let appleX = Math.random()*280;
+
+document.addEventListener("keydown", e => {
+  if(e.key==="ArrowLeft" && basketX>0) basketX-=20;
+  if(e.key==="ArrowRight" && basketX<240) basketX+=20;
+});
+
+setInterval(() => {
+  actx.clearRect(0,0,300,300);
+  actx.fillStyle="red";
+  actx.beginPath();
+  actx.arc(appleX,appleY,10,0,Math.PI*2);
+  actx.fill();
+
+  actx.fillStyle="brown";
+  actx.fillRect(basketX,260,60,20);
+
+  appleY+=5;
+  if(appleY>300 || (appleY>250 && appleX>basketX && appleX<basketX+60)){
+    appleY=0;
+    appleX=Math.random()*280;
+  }
+},50);
+</script>
+
+</body>
+</html>
+
